@@ -18,60 +18,18 @@ class KarumiHQsSpec: XCTestCase {
     }
 
     func testAll() {
-
-        property("The number of maxibons left can not be lower than two")
-            <- forAll { (developer: Developer) in
-            let karumiHQs = KarumiHQs()
-            karumiHQs.openFridge(developer)
-            return karumiHQs.maxibonsLeft > 2
+        
+        property("identity") <- forAll { (value: String) in
+            print(value)
+            return value + "" == value
         }
-
-        property("If there are two or less maxibons pending after opening the fridge Karumi automatically buys 10 more")
-            <- forAll(Developer.arbitraryHungry) { (developer: Developer) in
-                let karumiHQs = KarumiHQs()
-                let initialMaxibons = karumiHQs.maxibonsLeft
-                let numOfMaxibons = developer.numberOfMaxibonsToGet
-                let expectedMaxibons = self.maxibonsAfterOpeningTheFridge(initialMaxibons, numOfMaxibons)
-                karumiHQs.openFridge(developer)
-                return karumiHQs.maxibonsLeft == expectedMaxibons
+        
+        property("two consecutive strings hace the same size") <- forAll { (value: String, value2: String) in
+            return (value + value2).count == (value2 + value).count
         }
-
-        property("If there are two or less maxibons after opening the fridge the developer sends a message to buy more")
-            <- forAll(Developer.arbitraryHungry) { (developer: Developer) in
-                let chat = MockChat()
-                let karumiHQs = KarumiHQs(chat: chat)
-                karumiHQs.openFridge(developer)
-                let expectedResult = chat.messageSent == "Hi guys, I'm \(developer). We need more maxibons!"
-                chat.messageSent = nil
-                return expectedResult
-
-        }
-
-        property("If there are more than two maxibons after opening the fridge the developer does not send any message")
-            <- forAll(Developer.arbitraryNotSoHungry) { (developer: Developer) in
-                let chat = MockChat()
-                let karumiHQs = KarumiHQs(chat: chat)
-                karumiHQs.openFridge(developer)
-                let expectedResult = chat.messageSent == nil
-                chat.messageSent = nil
-                return expectedResult
-        }
-
-        property("If some Karumies go to the kitchen the number of maxibons left can't be lower than 2")
-            <- forAll { (developers: [Developer]) in
-                let karumiHQs = KarumiHQs()
-                karumiHQs.openFridge(developers)
-                return karumiHQs.maxibonsLeft > 2
-        }
-
-        property("If some Karumies go to the kitchen the number of maxibons left has to be correct")
-            <- forAll { (developers: [Developer]) in
-                let karumiHQs = KarumiHQs()
-                let initialMaxibons = karumiHQs.maxibonsLeft
-                let karumies = developers
-                karumiHQs.openFridge(karumies)
-                let expectedMaxibons = self.calculateMaxibonsLeft(initialMaxibons, developers: karumies)
-                return karumiHQs.maxibonsLeft == expectedMaxibons
+        
+        property("reverse twice gets the same value") <- forAll { (value: String) in
+            return value == value.reversed().reversed()
         }
 
     }
